@@ -61,4 +61,3 @@ ngpu = 1
 data = pd.read_csv("../Data/all_recorded_data.csv")
 print(data.shape)
 print(data.columns)
-data.head(3)
