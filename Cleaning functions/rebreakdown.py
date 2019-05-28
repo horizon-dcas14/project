@@ -10,7 +10,7 @@ import math
 import csv
 import numpy as np
      
-with open('./all_recorded_data.csv', 'r') as file:
+with open('../Data/all_recorded_data.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
 
@@ -25,12 +25,12 @@ data /= np.std(data,axis=0)
 print('Data normalized')
 
 for i in range(1191) :
-    with open('./data/'+str(i)+'.csv','w') as newfile :
+    with open('../Data/cleaned_normalized/'+str(i)+'.csv','w') as newfile :
         writer = csv.writer(newfile,delimiter=',')
         while data[n,0] > data[n+1,0] :
             writer.writerow(data[n])
             n += 1
         writer.writerow(data[n])
         n += 1
-        print('File ./data/' + str(i) + '.csv created')
+        print('File ../Data/cleaned_normalized/' + str(i) + '.csv created')
 

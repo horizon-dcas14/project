@@ -29,9 +29,9 @@ c = 0
 
 for i in range(9978):
     try :
-        with open('../recorded_csv_data2/FRGrecord_' + str(i) + '.csv', 'r') as file:
+        with open('../Data/recorded_csv_data2/FRGrecord_' + str(i) + '.csv', 'r') as file:
              data = csv.reader(file, delimiter=',')
-             with open('./cleaned_data/FRGrecord' + str(c) + '_cleaned.csv', 'w') as cleaned_file:
+             with open('../Data/cleaned_data/FRGrecord' + str(c) + '_cleaned.csv', 'w') as cleaned_file:
                  cleaned_data = csv.writer(cleaned_file, delimiter=',')
                  line_count = 0
                  for row in data:
@@ -59,6 +59,6 @@ for i in range(9978):
                      line_count += 1
         c += 1
     except FileNotFoundError :
-        print('File ' + '../recorded_csv_data2/FRGrecord_' + str(i) + '.csv' + ' was not found')
+        print('File ' + '../Data/recorded_csv_data2/FRGrecord_' + str(i) + '.csv' + ' was not found')
              
      

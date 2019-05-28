@@ -131,11 +131,11 @@ def binaryToData(state,n):
 
 count = 0
 
-with open('./all_recorded_data.csv', 'w') as alldata :
+with open('../Data/all_recorded_data.csv', 'w') as alldata :
     writer = csv.writer(alldata,delimiter=',')
     for i in range(9978):
         try :
-            with open('../recorded_csv_data2/FRGrecord_' + str(i) + '.csv', 'r') as file:
+            with open('../Data/recorded_csv_data2/FRGrecord_' + str(i) + '.csv', 'r') as file:
                  data = csv.reader(file, delimiter=',')
                  line_count = 0
                  for row in data :

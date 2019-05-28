@@ -9,7 +9,7 @@ import math
 import csv
 import numpy as np
      
-with open('./all_recorded_data.csv', 'r') as file:
+with open('../Data/all_recorded_data.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
 
@@ -20,7 +20,7 @@ data = data.astype(float)
 data -= np.mean(data,axis=0)
 data /= np.std(data,axis=0)
     
-with open('./all_recorded_data_normalized.csv','w') as newfile :
+with open('../Data/all_recorded_data_normalized.csv','w') as newfile :
     writer = csv.writer(newfile,delimiter=',')
     writer.writerow(header)
     for row in data :
