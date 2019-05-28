@@ -1,0 +1,7 @@
+remaining_time,robot_mode,alarm,robot_x,robot_y,robot_theta,forest_state,battery_level,temperature,water_robot_tank,water_ground_tank,leaks_state,keys, clicks,errors,shortcuts
+600,0,-1,0.00036376607022248214,-0.0033387592993676662,-0.006447252817451954, 000000000,100,20.0,50,50, 000000000, -1,-1,-1,-1
+599,0,-1,0.00036375498166307807,-0.003338758135214448,-0.006453284993767738, 000000000,100,20.0,50,50, 000000000, -1,-1,-1,-1
+598,0,-1,0.00036302418448030954,-0.0033387553412467237,-0.0064596650190651425, 000000000,99,20.0,50,50, 000000000, left,-1,-1,-1
+597,0,-1,0.0010115703335031867,-0.003798380028456449,0.2414563447237015, 100000000,99,20.0,50,50, 000000000, left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left,-1,-1,-1
+596,0,-1,0.0013885917142033575,-0.003486476605758071,0.460957944393158, 100000000,98,20.0,50,50, 000000000, left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left,-1,-1,-1
+595,0,-1,0.0016302799340337515,-0.0033177114091813564,0.6252022385597229, 100000000,98,20.0,50,50, 000001000, left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-left,-1,-1,-1
