@@ -104,11 +104,9 @@ def binaryToData(state,n):
 
 count = 0
 
-<<<<<<< HEAD:Cleaning functions/datacleaning2.py
-with open('../Data/all_recorded_data.csv', 'w', newline='') as alldata :
-=======
-with open('../Data/all_recorded_data2.csv', 'w') as alldata :
->>>>>>> 64101597ee3e77f1b56e74414e42ff26defad742:Cleaning functions/datacleaningToAll.py
+
+
+with open('../Data/all_recorded_data2.csv', 'w', newline = '') as alldata :
     writer = csv.writer(alldata,delimiter=',')
     for i in range(9978): #9978
         try :
