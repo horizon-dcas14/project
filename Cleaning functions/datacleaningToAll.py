@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -9,67 +10,39 @@ import math
 import csv
 import numpy as np
 
-def direction(string) :
-    d = 0
-    count = 0
-    while (string != '') :
-        if '-1' in string[:2] : 
-            string = string[2:]
-        elif 'other' in string[:5] :
-            string = string[5:]
-        elif 'back' in string[:4] :
-            string = string[4:]
-            count += 1
-        elif 'left' in string[:4] :
-            string = string[4:]
-            d += 1
-            count += 1
-        elif 'front' in string[:5] :
-            string = string[5:]
-            count += 1
-        elif 'right' in string[:5] :
-            string = string[5:]
-            d -= 1
-            count += 1
-        elif 'spac' in string[:4] :
-            string = string[4:]
-        else :
-            string = string[1:]
-    if count == 0 :
-        return 0
-    else :
-        return 0.53*d/count
+def direction(old,new) :
+    old = old.astype(float)
+    new = new.astype(float)
+    return new[2] - old[2]
 
-def avancement(string) :
-    a = 0
-    count = 0
+def avancement(old,new) :
+    old = old.astype(float)
+    new = new.astype(float)
+    return math.sqrt(pow(old[0]-new[0],2)+pow(old[1]-new[1],2))
+
+def keys(string) :
+    activations = np.zeros(5)
+    if string == '-1' :
+        return activations
     while (string != '') :
-        if '-1' in string[:2] : 
-            string = string[2:]
-        elif 'other' in string[:5] :
-            string = string[5:]
-        elif 'back' in string[:4] :
+        if 'left' in string[:4] : 
             string = string[4:]
-            a-=1
-            count += 1
-        elif 'left' in string[:4] :
-            string = string[4:]
-            count += 1
-        elif 'front' in string[:5] :
-            string = string[5:]
-            a += 1
-            count += 1
+            activations[0] += 1
         elif 'right' in string[:5] :
             string = string[5:]
-            count += 1
+            activations[1] += 1
+        elif 'front' in string[:5] :
+            string = string[5:]
+            activations[2] += 1
+        elif 'back' in string[:4] :
+            string = string[4:]
+            activations[3] += 1
         elif 'spac' in string[:4] :
             string = string[4:]
+            activations[4] += 1
         else :
             string = string[1:]
-    if count == 0 :
-        return 0
-    else :
-        return 2.86*a/count
+    return activations
 
 def clicks(string) :
     activations = np.zeros(14)
@@ -78,46 +51,46 @@ def clicks(string) :
     while (string != '') :
         if 'left' in string[:4] : 
             string = string[4:]
-            activations[0] = 1
+            activations[0] += 1
         elif 'right' in string[:5] :
             string = string[5:]
-            activations[1] = 1
+            activations[1] += 1
         elif 'push' in string[:4] :
             string = string[4:]
-            activations[2] = 1
+            activations[2] += 1
         elif 'wrench' in string[:6] :
             string = string[6:]
-            activations[3] = 1
+            activations[3] += 1
         elif 'leak_1' in string[:6] :
             string = string[6:]
-            activations[4] = 1
+            activations[4] += 1
         elif 'leak_2' in string[:6] :
             string = string[6:]
-            activations[5] = 1
+            activations[5] += 1
         elif 'leak_3' in string[:6] :
             string = string[6:]
-            activations[6] = 1
+            activations[6] += 1
         elif 'leak_4' in string[:6] :
             string = string[6:]
-            activations[7] = 1
+            activations[7] += 1
         elif 'leak_5' in string[:6] :
             string = string[6:]
-            activations[8] = 1
+            activations[8] += 1
         elif 'leak_6' in string[:6] :
             string = string[6:]
-            activations[9] = 1
+            activations[9] += 1
         elif 'leak_7' in string[:6] :
             string = string[6:]
-            activations[10] = 1
+            activations[10] += 1
         elif 'leak_8' in string[:6] :
             string = string[6:]
-            activations[11] = 1
+            activations[11] += 1
         elif 'leak_9' in string[:6] :
             string = string[6:]
-            activations[12] = 1
+            activations[12] += 1
         elif 'rm_alarm' in string[:8] :
             string = string[8:]
-            activations[13] = 1
+            activations[13] += 1
         else :
             string = string[1:]
     return activations
@@ -138,6 +111,9 @@ with open('../Data/all_recorded_data.csv', 'w') as alldata :
             with open('../Data/recorded_csv_data2/FRGrecord_' + str(i) + '.csv', 'r') as file:
                  data = csv.reader(file, delimiter=',')
                  line_count = 0
+                 first_line = next(data)
+                 first_line = next(data)
+                 old_state = np.array((first_line[3:6]))
                  for row in data :
                      if line_count == 0 :
                          if i == 7 :
@@ -146,6 +122,7 @@ with open('../Data/all_recorded_data.csv', 'w') as alldata :
                                              row[7:11] +
                                              ['leak 1', 'leak 2','leak 3', 'leak 4','leak 5', 'leak 6','leak 7', 'leak 8', 'leak 9'] +
                                              ['direction','avancement'] + 
+                                             ['left', 'right', 'front', 'back', 'space'] +
                                              ['left', 'right', 'push', 'wrench', 'leak 1', 'leak 2','leak 3', 'leak 4','leak 5', 'leak 6','leak 7', 'leak 8', 'leak 9', 'rm_alarm'] + 
                                              row[14:])
                      else :
@@ -178,12 +155,14 @@ with open('../Data/all_recorded_data.csv', 'w') as alldata :
                                 binaryToData(row[11],7),
                                 binaryToData(row[11],8),
                                 binaryToData(row[11],9),
-                                direction(row[12]),
-                                avancement(row[12])],
+                                direction(old_state,np.array(row[3:6])),
+                                avancement(old_state,np.array(row[3:6]))],
+                                keys(row[12]),
                                 clicks(row[13]),
                                 [row[14],
                                 row[15]
                                 ])))
+                         old_state = np.array(row[3:6])
                      line_count += 1
         except FileNotFoundError :
             count += 1
