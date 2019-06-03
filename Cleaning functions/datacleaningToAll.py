@@ -104,16 +104,14 @@ def binaryToData(state,n):
 
 count = 0
 
-with open('../Data/all_recorded_data.csv', 'w') as alldata :
+with open('../Data/all_recorded_data2.csv', 'w') as alldata :
     writer = csv.writer(alldata,delimiter=',')
-    for i in range(9978):
+    for i in range(9978): #9978
         try :
             with open('../Data/recorded_csv_data2/FRGrecord_' + str(i) + '.csv', 'r') as file:
                  data = csv.reader(file, delimiter=',')
                  line_count = 0
-                 first_line = next(data)
-                 first_line = next(data)
-                 old_state = np.array((first_line[3:6]))
+                 print(i)
                  for row in data :
                      if line_count == 0 :
                          if i == 7 :
@@ -125,6 +123,43 @@ with open('../Data/all_recorded_data.csv', 'w') as alldata :
                                              ['left', 'right', 'front', 'back', 'space'] +
                                              ['left', 'right', 'push', 'wrench', 'leak 1', 'leak 2','leak 3', 'leak 4','leak 5', 'leak 6','leak 7', 'leak 8', 'leak 9', 'rm_alarm'] + 
                                              row[14:])
+                     elif line_count == 1 :
+                         writer.writerow(np.concatenate(([
+                                row[0],
+                                row[1],
+                                row[2],
+                                row[3],
+                                row[4],
+                                row[5],
+                                binaryToData(row[6],1),
+                                binaryToData(row[6],2),
+                                binaryToData(row[6],3),
+                                binaryToData(row[6],4),
+                                binaryToData(row[6],5),
+                                binaryToData(row[6],6),
+                                binaryToData(row[6],7),
+                                binaryToData(row[6],8),
+                                binaryToData(row[6],9),
+                                row[7],
+                                row[8],
+                                row[9],
+                                row[10],
+                                binaryToData(row[11],1),
+                                binaryToData(row[11],2),
+                                binaryToData(row[11],3),
+                                binaryToData(row[11],4),
+                                binaryToData(row[11],5),
+                                binaryToData(row[11],6),
+                                binaryToData(row[11],7),
+                                binaryToData(row[11],8),
+                                binaryToData(row[11],9),
+                                0,
+                                0],
+                                keys(row[12]),
+                                clicks(row[13]),
+                                [row[14],
+                                row[15]
+                                ])))
                      else :
                          writer.writerow(np.concatenate(([
                                 row[0],
@@ -162,7 +197,7 @@ with open('../Data/all_recorded_data.csv', 'w') as alldata :
                                 [row[14],
                                 row[15]
                                 ])))
-                         old_state = np.array(row[3:6])
+                     old_state = np.array(row[3:6])
                      line_count += 1
         except FileNotFoundError :
             count += 1
