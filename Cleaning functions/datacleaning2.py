@@ -131,7 +131,7 @@ def binaryToData(state,n):
 
 count = 0
 
-with open('../Data/all_recorded_data.csv', 'w') as alldata :
+with open('../Data/all_recorded_data.csv', 'w', newline='') as alldata :
     writer = csv.writer(alldata,delimiter=',')
     for i in range(9978):
         try :
@@ -189,4 +189,4 @@ with open('../Data/all_recorded_data.csv', 'w') as alldata :
             count += 1
             #print('File ' + '../recorded_csv_data2/FRGrecord_' + str(i) + '.csv' + ' was not found')
 print(str(count) + ' files were not found')
-     
+ 

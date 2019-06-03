@@ -15,12 +15,12 @@ with open('../Data/all_recorded_data.csv', 'r') as file:
 
 header = np.array(data[0])
 data = np.array(data)
-data = data[1:,:44]
+data = data[1:][:44]
 data = data.astype(float)
 data -= np.mean(data,axis=0)
 data /= np.std(data,axis=0)
     
-with open('../Data/all_recorded_data_normalized.csv','w') as newfile :
+with open('../Data/all_recorded_data_normalized.csv','w',newline='') as newfile :
     writer = csv.writer(newfile,delimiter=',')
     writer.writerow(header)
     for row in data :
