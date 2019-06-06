@@ -9,13 +9,13 @@ import math
 import csv
 import numpy as np
      
-with open('../Data/all_recorded_data.csv', 'r') as file:
+with open('../Data/all_recorded_data2.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
 
 header = np.array(data[0])
 data = np.array(data)
-data = data[1:][:44]
+data = data[1:,:49]
 data = data.astype(float)
 data -= np.mean(data,axis=0)
 data /= np.std(data,axis=0)
