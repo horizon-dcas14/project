@@ -20,7 +20,11 @@ import numpy as np
 
 #import current data
 #all assembled in one sole file
+<<<<<<< HEAD
 with open('../Data/all_recorded_data2.csv', 'r') as file:
+=======
+with open('../Data/all_recorded_data_normalized.csv', 'r') as file:
+>>>>>>> a5e98e37eed30622992336e7217790146df14492
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
     header = np.array(data[0])
@@ -38,9 +42,9 @@ with open('../Data/cleaned_normalized/Autonomous.csv','w',newline='') as newfile
                 #split data
                 n = 1
                 while n < len(data):
-                    if data[n][1] == '0':
+                    if float(data[n][1]) < 0 :
                         writer2.writerow(data[n])
-                    elif data[n][1] == '1':
+                    elif float(data[n][1]) > 1:
                         writer1.writerow(data[n])
                     n += 1
  
