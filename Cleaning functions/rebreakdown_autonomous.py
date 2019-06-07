@@ -33,21 +33,19 @@ n = 1
 tobedel = []
 
 for i in range(int(n_rows/10)) :
-    with open('../Data/autonomous_cleaned_normalized/000.csv','w', newline='') as log:
-        writelog = csv.writer(log, delimiter=',')
-        with open('../Data/autonomous_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
-            writer = csv.writer(newfile,delimiter=',')
-            writer.writerow(header)
-            count = 0
-            while count<10:
-                writer.writerow(data[n])
-                if(int(data[n][0])-int(data[n+1][0]) != 1 and count!=9):
-                    count = 10
-                    tobedel.insert(0,i)
-                else:
-                    count+=1          
-                n+=1
-            print('File ../Data/autonomous_cleaned_normalized/' + str(i) + '.csv created')
+    with open('../Data/autonomous_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
+        writer = csv.writer(newfile,delimiter=',')
+        writer.writerow(header)
+        count = 0
+        while count<10:
+            writer.writerow(data[n])
+            if(int(data[n][0])-int(data[n+1][0]) != 1 and count!=9):
+                count = 10
+                tobedel.insert(0,i)
+            else:
+                count+=1          
+            n+=1
+        print('File ../Data/autonomous_cleaned_normalized/' + str(i) + '.csv created')
 
 #remove files
 for j in tobedel:

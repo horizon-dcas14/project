@@ -18,7 +18,7 @@ import numpy as np
 
 #import current data
 #all assembled in one sole file
-with open('../Data/all_recorded_data.csv', 'r') as file:
+with open('../Data/all_recorded_data2.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
     header = np.array(data[0])
