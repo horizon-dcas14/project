@@ -39,7 +39,7 @@ for i in range(int(n_rows/10)) :
         count = 0
         while count<10:
             writer.writerow(data[n])
-            if(int(data[n][0])-int(data[n+1][0]) != 1 and count!=9):
+            if(float(data[n][0])-float(data[n+1][0]) < 0 and count!=9):
                 count = 10
                 tobedel.insert(0,i)
             else:
