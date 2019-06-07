@@ -1,0 +1,3 @@
+remaining_time,robot_mode,alarm,robot_x,robot_y,robot_theta,forest_state,battery_level,temperature,water_robot_tank,water_ground_tank,leaks_state,keys, clicks,errors,shortcuts
+600,0,-1,-3.3580217859707777e-06,-5.129198143549728e-06,0.00016762508312240243, 000000000,100,20.0,50,50, 000000000,-1,-1,-1,-1
+599,0,-1,-3.020598342118319e-06,-5.233300726104062e-06,0.00016919185873121023, 000000000,100,20.0,50,50, 000000000,-1,-1,-1,-1

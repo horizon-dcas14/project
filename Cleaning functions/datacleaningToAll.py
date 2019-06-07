@@ -113,7 +113,6 @@ with open('../Data/all_recorded_data2.csv', 'w', newline = '') as alldata :
             with open('../Data/recorded_csv_data2/FRGrecord_' + str(i) + '.csv', 'r') as file:
                  data = csv.reader(file, delimiter=',')
                  line_count = 0
-                 print(i)
                  for row in data :
                      if line_count == 0 :
                          if i == 7 :
