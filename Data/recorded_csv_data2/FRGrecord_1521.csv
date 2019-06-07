@@ -1,7 +1,0 @@
-remaining_time,robot_mode,alarm,robot_x,robot_y,robot_theta,forest_state,battery_level,temperature,water_robot_tank,water_ground_tank,leaks_state,keys, clicks,errors,shortcuts
-600,0,-1,-1.2683336763075206e-06,-5.883720859856113e-06,0.00017922713595908138, 000000000,100,20.0,50,50, 000000000, -1,-1,-1,-2
-599,0,-1,-1.1367095567038632e-06,-5.934536147833569e-06,0.00018002137949224561, 000000000,100,20.0,50,50, 000000000, front-front,-1,-1,-2
-598,0,-1,0.8128872513771057,0.0002462523407302797,0.1339304894208908, 000000000,99,20.0,50,50, 000000000, left-left-left-left-left-left-left-left-left-left-left-left-front,-1,-1,-2
-597,0,-1,2.1356000900268555,0.554693341255188,0.3976355195045471, 000000000,99,20.0,50,50, 000000000, front-front-front-front-front-front-front-front-left-left,-1,-1,-2
-596,0,-1,2.709040403366089,0.7942590713500977,0.8163692355155945, 000000000,98,20.0,50,50, 000000000, left-left-left-left-left-left-left-left-left-left-left-left-left-left-left-front-front-front,-1,-1,-2
-595,0,-1,4.052395820617677,2.5952248573303223,0.9295718669891356, 000000000,98,20.0,50,50, 100000000, front-front-front-front-front-front-front-front-front-front-front,-1,-1,-2
