@@ -10,6 +10,8 @@ This script was written to split our data into two categories:
     1) autonomous mode
     2) manual mode
     
+MUST BE RUN AFTER datacleaningtoall.py
+    
 """
 
 import math
