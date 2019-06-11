@@ -11,6 +11,10 @@ import math
 import csv
 import numpy as np
 
+# =============================================================================
+# Cleaning functions
+# =============================================================================
+
 def direction(old,new) :
     old = old.astype(float)
     new = new.astype(float)
@@ -105,7 +109,9 @@ def binaryToData(state,n):
 
 count = 0
 
-
+# =============================================================================
+# Regrouping data into one file
+# =============================================================================
 
 with open('../Data/all_recorded_data.csv', 'w', newline = '') as alldata :
     writer = csv.writer(alldata,delimiter=',')
@@ -203,10 +209,12 @@ with open('../Data/all_recorded_data.csv', 'w', newline = '') as alldata :
                      line_count += 1
         except FileNotFoundError :
             count += 1
-            #print('File ' + '../recorded_csv_data2/FRGrecord_' + str(i) + '.csv' + ' was not found')
-#print(str(count) + ' files were not found')
 
 print('Data collected into one file')
+
+# =============================================================================
+# Data normalization
+# =============================================================================
 
 with open('../Data/all_recorded_data.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
@@ -226,6 +234,10 @@ with open('../Data/all_recorded_data_normalized.csv','w',newline='') as newfile 
         writer.writerow(row)
 
 print('Data normalized')
+
+# =============================================================================
+# Splitting data based en robot mode
+# =============================================================================
 
 #import current data
 #all assembled in one sole file
@@ -256,6 +268,10 @@ with open('../Data/cleaned_normalized/Autonomous.csv','w',newline='') as newfile
 
 print('Files splitted based on robot mode')
 
+# =============================================================================
+# Breaking down Autonomous data in 10 second sequences
+# =============================================================================
+
 with open('../Data/cleaned_normalized/Autonomous.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
@@ -281,12 +297,10 @@ for i in range(int(n_rows/10)) :
             else:
                 count+=1          
             n+=1
-        #print('File ../Data/autonomous_cleaned_normalized/' + str(i) + '.csv created')
 
 #remove files
 for j in tobedel:
     os.remove('../Data/autonomous_cleaned_normalized/'+str(j)+'.csv')
-    #print('File Removed!:' + str(j))
 print('All normalized breakdowned autonomous files treated')
 
 with open('../Data/cleaned_normalized/Human.csv', 'r') as file:
@@ -297,6 +311,10 @@ with open('../Data/cleaned_normalized/Human.csv', 'r') as file:
 
 print('Human data loaded')
 n = 1
+
+# =============================================================================
+# Breaking down Human data in 10 second sequences
+# =============================================================================
 
 # list to store the files to be deleted
 tobedel = []
@@ -314,15 +332,16 @@ for i in range(int(n_rows/10)) :
             else:
                 count+=1          
             n+=1
-        #print('File ../Data/human_cleaned_normalized/' + str(i) + '.csv created')
 
 #remove files
 for j in tobedel:
     os.remove('../Data/human_cleaned_normalized/'+str(j)+'.csv')
-    #print('File Removed!:' + str(j))
 
 print('All normalized breakdowned human files treated')
 
+# =============================================================================
+# Removing temporary files
+# =============================================================================
+
 os.remove('../Data/all_recorded_data.csv')
 os.remove('../Data/all_recorded_data_normalized.csv')
-os.remove('../Data/cleaned_normalized')
