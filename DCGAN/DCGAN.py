@@ -33,7 +33,7 @@ random.seed(manualSeed)
 torch.manual_seed(manualSeed)
 
 # Root directory for dataset
-dataroot = "../dataset/Data/autonomous_cleaned_normalized/"
+dataroot = "../Data/autonomous_cleaned_normalized/"
 # Number of workers for dataloader
 workers = 2
 # Batch size during training
@@ -69,12 +69,9 @@ def get_data(dataroot):
     df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])
     return df.as_matrix()
 
-data_sets = datasets.DatasetFolder(dataroot, 
+data_sets = torchvision.datasets.DatasetFolder(dataroot, 
                                    loader=get_data, extensions=['.csv'])
-dataloader = torch.utils.data.DataLoader(data_sets,
-                                          batch_size,
-                                          shuffle=False,
-                                          workers)
+dataloader = torch.utils.data.DataLoader(data_sets, batch_size, shuffle = True, num_workers = workers)
 
 # Decide which device we want to run on
 device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
@@ -96,25 +93,17 @@ class Generator(nn.Module):
         self.ngpu = ngpu
         self.main = nn.Sequential(
             # input is Z, going into a convolution
-            nn.ConvTranspose2d( nz, ngf * 8, 4, 1, 0, bias=False),
-            nn.BatchNorm2d(ngf * 8),
-            nn.ReLU(True),
-            # state size. (ngf*8) x 4 x 4
-            nn.ConvTranspose2d(ngf * 8, ngf * 4, 4, 2, 1, bias=False),
+            nn.ConvTranspose2d( nz, ngf * 4, (6,1), 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 4),
             nn.ReLU(True),
-            # state size. (ngf*4) x 8 x 8
-            nn.ConvTranspose2d( ngf * 4, ngf * 2, 4, 2, 1, bias=False),
+            # state size. (ngf*4) x 6 x 1
+            nn.ConvTranspose2d(ngf * 4, ngf * 2, (3,1), 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 2),
             nn.ReLU(True),
-            # state size. (ngf*2) x 16 x 16
-            nn.ConvTranspose2d( ngf * 2, ngf, 4, 2, 1, bias=False),
-            nn.BatchNorm2d(ngf),
-            nn.ReLU(True),
-            # state size. (ngf) x 32 x 32
-            nn.ConvTranspose2d( ngf, nc, 4, 2, 1, bias=False),
+            # state size. (ngf*2) x 8 x 1
+            nn.ConvTranspose2d( ngf * 2, 1, 3, 1, 0, bias=False),
             nn.Tanh()
-            # state size. (nc) x 64 x 64
+            # state size. (1) x 10 x 3
         )
     def forward(self, input):
             return self.main(input)
@@ -140,12 +129,12 @@ class Discriminator(nn.Module):
             # input is (nc=1) x 10 x 3
             nn.Conv2d(nc, ndf, 3, 1, 0, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf) x 32 x 32
-            nn.Conv2d(ndf, ndf * 2, (3,1), 2, 1, bias=False),
+            # state size. (ndf) x 8 x 1
+            nn.Conv2d(ndf, ndf * 2, (3,1), 1, 0, bias=False),
             nn.BatchNorm2d(ndf * 2),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*2) x 3 x 1
-            nn.Conv2d(ndf * 2, 1, 4, 1, 0, bias=False),
+            # state size. (ndf*2) x 6 x 1
+            nn.Conv2d(ndf * 2, 1, (6,1), 1, 0, bias=False),
             nn.Sigmoid()
         )
     def forward(self, input):
