@@ -33,7 +33,7 @@ random.seed(manualSeed)
 torch.manual_seed(manualSeed)
 
 # Root directory for dataset
-dataroot = "../Data/autonomous_cleaned_normalized/"
+dataroot = "../Data/Autonomous data/"
 # Number of workers for dataloader
 workers = 2
 # Batch size during training
@@ -69,7 +69,7 @@ def get_data(dataroot):
     df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])
     return df.as_matrix()
 
-data_sets = torchvision.datasets.DatasetFolder(dataroot, 
+data_sets = dset.DatasetFolder(dataroot, 
                                    loader=get_data, extensions=['.csv'])
 dataloader = torch.utils.data.DataLoader(data_sets, batch_size, shuffle = True, num_workers = workers)
 
