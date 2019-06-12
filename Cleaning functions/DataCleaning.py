@@ -220,7 +220,7 @@ with open('../Data/all_recorded_data.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
 
-header = np.array(data[0])
+header = np.array(data[0][:49])
 data = np.array(data)
 data = data[1:,:49]
 data = data.astype(float)
@@ -285,7 +285,7 @@ n = 1
 tobedel = []
 
 for i in range(int(n_rows/10)) :
-    with open('../Data/autonomous_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
+    with open('../Data/Autonomous data/autonomous_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
         writer = csv.writer(newfile,delimiter=',')
         writer.writerow(header)
         count = 0
@@ -300,7 +300,7 @@ for i in range(int(n_rows/10)) :
 
 #remove files
 for j in tobedel:
-    os.remove('../Data/autonomous_cleaned_normalized/'+str(j)+'.csv')
+    os.remove('../Data/Autonomous data/autonomous_cleaned_normalized/'+str(j)+'.csv')
 print('All normalized breakdowned autonomous files treated')
 
 with open('../Data/cleaned_normalized/Human.csv', 'r') as file:
@@ -320,7 +320,7 @@ n = 1
 tobedel = []
 
 for i in range(int(n_rows/10)) :
-    with open('../Data/human_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
+    with open('../Data/Human data/human_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
         writer = csv.writer(newfile,delimiter=',')
         writer.writerow(header)
         count = 0
@@ -335,7 +335,7 @@ for i in range(int(n_rows/10)) :
 
 #remove files
 for j in tobedel:
-    os.remove('../Data/human_cleaned_normalized/'+str(j)+'.csv')
+    os.remove('../Data/Human data/human_cleaned_normalized/'+str(j)+'.csv')
 
 print('All normalized breakdowned human files treated')
 
