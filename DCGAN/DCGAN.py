@@ -26,6 +26,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from IPython.display import HTML
+import time
 
 #%% Initializing parameters
 # Set random seem for reproducibility
@@ -70,13 +71,27 @@ Create the appropriate dataset class format for our problem
 #%% Dataset creation
 #should we have the header removed?
 def get_data(dataroot):
+    #df = np.array([])
     df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])
-    return df.as_matrix()
+    # print(np.shape(df[0]))
+    #print(type(df))
+    #print(type(df.values))
+    #print(df.values)
+    #print('')
+    df = df.values
+    #df = df.astype(double)
+    df = torch.DoubleTensor([df])#,dtype=torch.double)
+    df.float()
+    #print(df)
+    #print(type(df))
+    #print(df)
+    #print('')
+    #time.sleep(10) 
+    return df #.values
 
 data_sets = dset.DatasetFolder(dataroot, 
                                    loader=get_data, extensions=['.csv'])
 dataloader = torch.utils.data.DataLoader(data_sets, batch_size, shuffle = True, num_workers = workers)
-
 # Decide which device we want to run on
 device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
@@ -86,9 +101,13 @@ def weights_init(m):
     classname = m.__class__.__name__
     if classname.find('Conv') != -1:
         nn.init.normal_(m.weight.data, 0.0, 0.02)
+        m.weight.data = m.weight.data.float()
     elif classname.find('BatchNorm') != -1:
         nn.init.normal_(m.weight.data, 1.0, 0.02)
         nn.init.constant_(m.bias.data, 0)
+        m.weight.data = m.weight.data.float()
+        m.bias.data = m.bias.data.float()
+        
 
 #%% Create the generator
 # Generator Code
@@ -115,6 +134,7 @@ class Generator(nn.Module):
         
 # Create the generator
 netG = Generator(ngpu).to(device)
+netG = netG.float()
 # Handle multi-gpu if desired
 if (device.type == 'cuda') and (ngpu > 1):
     netG = nn.DataParallel(netG, list(range(ngpu)))
@@ -145,6 +165,7 @@ class Discriminator(nn.Module):
         
 # Create the Discriminator
 netD = Discriminator(ngpu).to(device)
+netD = netD.float()
 # Handle multi-gpu if desired
 if (device.type == 'cuda') and (ngpu > 1):
     netD = nn.DataParallel(netD, list(range(ngpu)))
@@ -177,13 +198,25 @@ img_list = []
 G_losses = []
 D_losses = []
 iters = 0
+netD = netD.float()
+netG = netG.float()
 
 print("Starting Training Loop...")
 # For each epoch
 for epoch in range(num_epochs):
     # For each batch in the dataloader
+    print('Epoch : ', epoch)
     for i, data in enumerate(dataloader, 0):
-
+        #data = data
+        #for j in range(128):
+        data[0] = data[0].float()
+        #print('i : ' + str(i) + ' ; data : ' + str(data))
+        #print(type(data[0]))
+        #print(type(data[0][0]))
+        #print(np.shape(data))
+        #print(np.shape(data[0]))
+        #print(np.shape(data[0][0]))
+        #break
         ############################
         # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
         ###########################
