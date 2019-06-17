@@ -48,13 +48,13 @@ image_size = 64
 # Number of channels in the training data.
 nc = 1
 # Size of z latent vector (i.e. size of generator input)
-nz = 100
+nz = 60
 # Size of feature maps in generator
 ngf = 64
 # Size of feature maps in discriminator
 ndf = 6
 # Number of training epochs
-num_epochs = 5
+num_epochs = 10
 # Learning rate for optimizers
 lr = 0.0002
 # Beta1 hyperparam for Adam optimizers
@@ -71,7 +71,7 @@ Create the appropriate dataset class format for our problem
 #%% Dataset creation
 #should we have the header removed?
 def get_data(dataroot):
-    df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])#,'direction','avancement'])
+    df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta','direction','avancement'])
     df = df.values
     df = torch.DoubleTensor([df])
     return df
@@ -112,9 +112,9 @@ class Generator(nn.Module):
             nn.BatchNorm2d(ngf * 2),
             nn.ReLU(True),
             # state size. (ngf*2) x 8 x 1
-            nn.ConvTranspose2d( ngf * 2, 1, 3, 1, 0, bias=False),
+            nn.ConvTranspose2d( ngf * 2, 1, (3,5), 1, 0, bias=False),
             nn.Tanh()
-            # state size. (1) x 10 x 3
+            # state size. (1) x 10 x 5
         )
     def forward(self, input):
             return self.main(input)
@@ -136,8 +136,8 @@ class Discriminator(nn.Module):
         super(Discriminator, self).__init__()
         self.ngpu = ngpu
         self.main = nn.Sequential(
-            # input is (nc=1) x 10 x 3
-            nn.Conv2d(nc, ndf, 3, 1, 0, bias=False),
+            # input is (nc=1) x 10 x 5
+            nn.Conv2d(nc, ndf, (3,5), 1, 0, bias=False),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf) x 8 x 1
             nn.Conv2d(ndf, ndf * 2, (3,1), 1, 0, bias=False),
@@ -198,14 +198,8 @@ for epoch in range(num_epochs):
         #for j in range(128):
         data[0] = data[0].float()
         #Extract the data representing the situations from data 
-        situations = torch.chunk(data[0],1,3)[0]
-        #print('i : ' + str(i) + ' ; data : ' + str(data))
-        #print(type(data[0]))
-        #print(type(data[0][0]))
-        #print(np.shape(data))
-        #print(np.shape(data[0]))
-        #print(np.shape(data[0][0]))
-        #break
+        situations = torch.chunk(data[0],2,3)[0]
+       
         ############################
         # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
         ###########################
@@ -225,22 +219,17 @@ for epoch in range(num_epochs):
 
         ## Train with all-fake batch
         # Generate batch of latent vectors
-        noise = torch.randn(b_size, nz-1, 10, 3, device=device)
-        #for j in range(batch_size) :
-            #print(noise[j])
-            #print(data[0][j][:3])
-            #print(np.shape(noise[j]))
-        print(np.shape(noise))
-        print(np.shape(data[0]))
+        noise = torch.randn(b_size, 1, 10, 3, device=device)
+       
         noise = torch.cat((noise,situations),1)
         
-        print(np.shape(noise))
+        #print(np.shape(noise))
+        noise = torch.reshape(noise,(b_size,nz,1,1))
         # Generate fake image batch with G
         fake = netG(noise)
         label.fill_(fake_label)
         # Classify all fake batch with D
         output = netD(fake.detach()).view(-1)
-        print(np.shape(output))
         # Calculate D's loss on the all-fake batch
         errD_fake = criterion(output, label)
         # Calculate the gradients for this batch
