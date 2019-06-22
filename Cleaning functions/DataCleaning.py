@@ -9,6 +9,7 @@ Created on Fri Jun  7 16:36:56 2019
 import os
 import math
 import csv
+import torch
 import numpy as np
 
 # =============================================================================
@@ -224,8 +225,10 @@ header = np.array(data[0][:49])
 data = np.array(data)
 data = data[1:,:49]
 data = data.astype(float)
-data -= np.mean(data,axis=0)
-data /= np.std(data,axis=0)
+mean = np.mean(data,axis=0)
+std = np.std(data,axis=0)
+data -= mean
+data /= std
     
 with open('../Data/all_recorded_data_normalized.csv','w',newline='') as newfile :
     writer = csv.writer(newfile,delimiter=',')

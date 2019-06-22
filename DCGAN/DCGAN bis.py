@@ -377,7 +377,6 @@ def treat_data(array) :
     array[:,0,:,17] *= std[29]
     array[:,0,:,17] += mean[29]
     array[:,0,:,17] *= 2.5 * sf 
-    #print(array[:,16:18])
 
 def tree_state(val):
     if val > 0 :
@@ -385,45 +384,42 @@ def tree_state(val):
     else :
         return '#000fff000'
         
-
 def print_trees(array) :
-    tree1 = canvas.create_oval(tdmu(4.55076)-sf,100*sf-(tdmu(14.66826)+sf),tdmu(4.55076)+sf,100*sf-(tdmu(14.66826)-sf),fill=tree_state(array[0,3]))
-    tree2 = canvas.create_oval(tdmu(-0.7353)-sf,100*sf-(tdmu(14.75052)+sf),tdmu(-0.7353)+sf,100*sf-(tdmu(14.75052)-sf),fill=tree_state(array[0,4]))
-    tree3 = canvas.create_oval(tdmu(-15.10146)-sf,100*sf-(tdmu(15.76476)+sf),tdmu(-15.10146)+sf,100*sf-(tdmu(15.76476)-sf),fill=tree_state(array[0,5]))
-    tree4 = canvas.create_oval(tdmu(-2.6019)-sf,100*sf-(tdmu(6.7425)+sf),tdmu(-2.6019)+sf,100*sf-(tdmu(6.7425)-sf),fill=tree_state(array[0,6]))
-    tree5 = canvas.create_oval(tdmu(-1.33158)-sf,100*sf-(tdmu(10.02042)+sf),tdmu(-1.33158)+sf,100*sf-(tdmu(10.02042)-sf),fill=tree_state(array[0,7]))
-    tree6 = canvas.create_oval(tdmu(16.58292)-sf,100*sf-(tdmu(-12.5847)+sf),tdmu(16.58292)+sf,100*sf-(tdmu(-12.5847)-sf),fill=tree_state(array[0,8]))
-    tree7 = canvas.create_oval(tdmu(16.87086)-sf,100*sf-(tdmu(-16.01952)+sf),tdmu(16.87086)+sf,100*sf-(tdmu(-16.01952)-sf),fill=tree_state(array[0,9]))
-    tree8 = canvas.create_oval(tdmu(0.6078)-sf,100*sf-(tdmu(-16.23906)+sf),tdmu(0.6078)+sf,100*sf-(tdmu(-16.23906)-sf),fill=tree_state(array[0,10]))
-    tree9 = canvas.create_oval(tdmu(-16.65378)-sf,100*sf-(tdmu(-16.23906)+sf),tdmu(-16.65378)+sf,100*sf-(tdmu(-16.23906)-sf),fill=tree_state(array[0,11]))
+    tree1 = canvas.create_oval(tdmu(4.55076)-2*sf,100*sf-(tdmu(14.66826)+2*sf),tdmu(4.55076)+2*sf,100*sf-(tdmu(14.66826)-2*sf),fill=tree_state(array[0,3]))
+    tree2 = canvas.create_oval(tdmu(-0.7353)-2*sf,100*sf-(tdmu(14.75052)+2*sf),tdmu(-0.7353)+2*sf,100*sf-(tdmu(14.75052)-2*sf),fill=tree_state(array[0,4]))
+    tree3 = canvas.create_oval(tdmu(-15.10146)-2*sf,100*sf-(tdmu(15.76476)+2*sf),tdmu(-15.10146)+2*sf,100*sf-(tdmu(15.76476)-2*sf),fill=tree_state(array[0,5]))
+    tree4 = canvas.create_oval(tdmu(-2.6019)-2*sf,100*sf-(tdmu(6.7425)+2*sf),tdmu(-2.6019)+2*sf,100*sf-(tdmu(6.7425)-2*sf),fill=tree_state(array[0,6]))
+    tree5 = canvas.create_oval(tdmu(-1.33158)-2*sf,100*sf-(tdmu(10.02042)+2*sf),tdmu(-1.33158)+2*sf,100*sf-(tdmu(10.02042)-2*sf),fill=tree_state(array[0,7]))
+    tree6 = canvas.create_oval(tdmu(16.58292)-2*sf,100*sf-(tdmu(-12.5847)+2*sf),tdmu(16.58292)+2*sf,100*sf-(tdmu(-12.5847)-2*sf),fill=tree_state(array[0,8]))
+    tree7 = canvas.create_oval(tdmu(16.87086)-2*sf,100*sf-(tdmu(-16.01952)+2*sf),tdmu(16.87086)+2*sf,100*sf-(tdmu(-16.01952)-2*sf),fill=tree_state(array[0,9]))
+    tree8 = canvas.create_oval(tdmu(0.6078)-2*sf,100*sf-(tdmu(-16.23906)+2*sf),tdmu(0.6078)+2*sf,100*sf-(tdmu(-16.23906)-2*sf),fill=tree_state(array[0,10]))
+    tree9 = canvas.create_oval(tdmu(-16.65378)-2*sf,100*sf-(tdmu(-16.23906)+2*sf),tdmu(-16.65378)+2*sf,100*sf-(tdmu(-16.23906)-2*sf),fill=tree_state(array[0,11]))
+    red_square = canvas.create_rectangle(tdmu(0)-2*sf,100*sf-(tdmu(-10)+2*sf),tdmu(0)+2*sf,100*sf-(tdmu(-10)-2*sf),fill='red')
+    blue_square = canvas.create_rectangle(tdmu(16)-2*sf,100*sf-(tdmu(16.29)+2*sf),tdmu(16)+2*sf,100*sf-(tdmu(16.29)-2*sf),fill='blue')
 
 def print_lines(array) :
     for i,line in enumerate(array,1):
-        #print(line[0],line[1],line[17]*math.cos(line[16]),line[17]*math.sin(line[16]))
-        canvas.create_line(line[0],100*sf-(line[1]),line[0]+line[17]*math.cos(line[16]),100*sf-(line[1]+line[17]*math.sin(line[16])),fill='blue')
+        canvas.create_line(line[0],100*sf-(line[1]),line[0]+line[17]*math.cos(line[16]),100*sf-(line[1]+line[17]*math.sin(line[16])),fill='blue',width=3,arrow='last')
 
 
 def print_positions(array):
     for i,line in enumerate(array,1):
-        #print(line)
-        canvas.create_oval(line[0]-sf,100*sf-(line[1]+sf),line[0]+sf,100*sf-(line[1]-sf),fill='red')
+        canvas.create_oval(line[0]-1.5*sf,100*sf-(line[1]+1.5*sf),line[0]+1.5*sf,100*sf-(line[1]-1.5*sf),fill='grey')
         canvas.create_text(line[0],100*sf-line[1],text=str(i))
-
-
 
 ### Corps du programme ###
 
-fenetre=tkinter.Tk()                            #Création de la fenêtre principale
-frame=tkinter.Frame(fenetre)                    #Création d'un frame principal
-frame_1=tkinter.Frame(frame)                    #Création d'un frame secondaire
-frame_2=tkinter.Frame(frame)                    #Création d'un frame secondaire
-frame_3=tkinter.Frame(frame)           #Prolongement du programme : création d'un frame secondaire
-frame_1_1=tkinter.Frame(frame_1)                #Création d'un frame tertiaire
-frame_1_2=tkinter.Frame(frame_1)                #Création d'un frame tertiaire
-frame_3_1=tkinter.Frame(frame_3)       #Prolongement du programme :  création d'un frame tertiaire
-frame_3_2=tkinter.Frame(frame_3)       #Prolongement du programme : création d'un frame tertiaire
-frame_4=tkinter.Frame(frame)           #Prolongement du programme : création d'un frame secondaire
-canvas=tkinter.Canvas(fenetre,width=sf*100, height=sf*100, background='green')        #Création d'un canvas (zone de dessin)
+fenetre=tkinter.Tk()                           
+frame=tkinter.Frame(fenetre)                    
+frame_1=tkinter.Frame(frame)                    
+frame_2=tkinter.Frame(frame)                    
+frame_3=tkinter.Frame(frame)           
+frame_1_1=tkinter.Frame(frame_1)                
+frame_1_2=tkinter.Frame(frame_1)              
+frame_3_1=tkinter.Frame(frame_3)     
+frame_3_2=tkinter.Frame(frame_3)    
+frame_4=tkinter.Frame(frame)           
+canvas=tkinter.Canvas(fenetre,width=sf*100, height=sf*100, background='green')        
 
 treat_data(fake2)
 
