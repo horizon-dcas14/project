@@ -3,7 +3,7 @@
 """
 Created on Fri Jun  7 16:36:56 2019
 
-@author: aloisblarre
+@author: ftxsilva
 """
 
 import os
@@ -214,58 +214,33 @@ with open('../Data/all_recorded_data.csv', 'w', newline = '') as alldata :
 print('Data collected into one file')
 
 # =============================================================================
-# Data standardization
-# =============================================================================
-
-with open('../Data/all_recorded_data.csv', 'r') as file:
-    reader = csv.reader(file, delimiter=',')
-    data = list(reader)
-
-header = np.array(data[0][:49])
-data = np.array(data)
-data = data[1:,:49]
-data = data.astype(float)
-mean = np.mean(data,axis=0)
-std = np.std(data,axis=0)
-data -= mean
-data /= std
-    
-with open('../Data/all_recorded_data_normalized.csv','w',newline='') as newfile :
-    writer = csv.writer(newfile,delimiter=',')
-    writer.writerow(header)
-    for row in data :
-        writer.writerow(row)
-
-print('Data normalized')
-
-# =============================================================================
 # Splitting data based en robot mode
 # =============================================================================
 
 #import current data
 #all assembled in one sole file
 
-with open('../Data/all_recorded_data_normalized.csv', 'r') as file:
+with open('../Data/all_recorded_data.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
     header = np.array(data[0])
     data = np.array(data)
 
 #create new files
-with open('../Data/cleaned_normalized/Autonomous.csv','w',newline='') as newfile1 :
+with open('../Data/Autonomous_non_normalized.csv','w',newline='') as newfile1 :
         writer1 = csv.writer(newfile1,delimiter=',')
         writer1.writerow(header)
 
-        with open('../Data/cleaned_normalized/Human.csv','w', newline='') as newfile2 :
+        with open('../Data/Human_non_normalized.csv','w', newline='') as newfile2 :
                 writer2 = csv.writer(newfile2,delimiter=',')
                 writer2.writerow(header)
         
                 #split data
                 n = 1
                 while n < len(data):
-                    if float(data[n][1]) < 0 :
+                    if float(data[n][1]) == 0 :
                         writer2.writerow(data[n])
-                    elif float(data[n][1]) > 1:
+                    elif float(data[n][1]) == 1:
                         writer1.writerow(data[n])
                     n += 1
 
@@ -275,7 +250,7 @@ print('Files splitted based on robot mode')
 # Breaking down Autonomous data in 10 second sequences
 # =============================================================================
 
-with open('../Data/cleaned_normalized/Autonomous.csv', 'r') as file:
+with open('../Data/Autonomous_non_normalized.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
     header = np.array(data[0])
@@ -288,7 +263,7 @@ n = 1
 tobedel = []
 
 for i in range(int(n_rows/10)) :
-    with open('../Data/Autonomous data/autonomous_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
+    with open('../Data/original data/Autonomous data/'+str(i)+'.csv','w',newline='') as newfile :
         writer = csv.writer(newfile,delimiter=',')
         writer.writerow(header)
         count = 0
@@ -303,10 +278,10 @@ for i in range(int(n_rows/10)) :
 
 #remove files
 for j in tobedel:
-    os.remove('../Data/Autonomous data/autonomous_cleaned_normalized/'+str(j)+'.csv')
+    os.remove('../Data/original data/Autonomous data/'+str(j)+'.csv')
 print('All normalized breakdowned autonomous files treated')
 
-with open('../Data/cleaned_normalized/Human.csv', 'r') as file:
+with open('../Data/Human_non_normalized.csv', 'r') as file:
     reader = csv.reader(file, delimiter=',')
     data = list(reader)
     header = np.array(data[0])
@@ -323,7 +298,7 @@ n = 1
 tobedel = []
 
 for i in range(int(n_rows/10)) :
-    with open('../Data/Human data/human_cleaned_normalized/'+str(i)+'.csv','w',newline='') as newfile :
+    with open('../Data/original data/Human data/'+str(i)+'.csv','w',newline='') as newfile :
         writer = csv.writer(newfile,delimiter=',')
         writer.writerow(header)
         count = 0
@@ -338,7 +313,7 @@ for i in range(int(n_rows/10)) :
 
 #remove files
 for j in tobedel:
-    os.remove('../Data/Human data/human_cleaned_normalized/'+str(j)+'.csv')
+    os.remove('../Data/original data/Human data/'+str(j)+'.csv')
 
 print('All normalized breakdowned human files treated')
 
@@ -346,5 +321,7 @@ print('All normalized breakdowned human files treated')
 # Removing temporary files
 # =============================================================================
 
-#os.remove('../Data/all_recorded_data.csv')
-#os.remove('../Data/all_recorded_data_normalized.csv')
+os.remove('../Data/all_recorded_data.csv')
+os.remove('../Data/all_recorded_data_normalized.csv')
+os.remove('../Data/Autonomous_non_normalized.csv')
+os.remove('../Data/Human_non_normalized.csv')
