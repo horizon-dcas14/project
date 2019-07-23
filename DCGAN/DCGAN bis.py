@@ -79,7 +79,7 @@ def get_data(dataroot):
 
 data_sets = dset.DatasetFolder(dataroot, 
                                    loader=get_data, extensions=['.csv'])
-dataloader = torch.utils.data.DataLoader(data_sets, batch_size, shuffle = True, num_workers = workers)
+dataloader = torch.utils.data.DataLoader(data_sets, batch_size, shuffle = False, num_workers = workers)
 # Decide which device we want to run on
 device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
@@ -168,7 +168,7 @@ criterion = nn.BCELoss()
 
 # Create batch of latent vectors that we will use to visualize
 #  the progression of the generator
-fixed_noise = torch.randn(64, nz, 1, 1, device=device)
+fixed_noise = torch.randn(1, nr, 1, 1, device=device)
 
 # Establish convention for real and fake labels during training
 real_label = 1
@@ -182,7 +182,7 @@ optimizerG = optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
 # Training Loop
 
 # Lists to keep track of progress
-img_list = []
+extract_list = []
 G_losses = []
 D_losses = []
 iters = 0
@@ -195,8 +195,6 @@ for epoch in range(num_epochs):
     # For each batch in the dataloader
     print('Epoch : ', epoch)
     for i, data in enumerate(dataloader, 0):
-        #data = data
-        #for j in range(128):
         data[0] = data[0].float()
         #Extract the data representing the situations from data 
         situations = torch.split(data[0],input_variables,3)[0]
@@ -269,13 +267,21 @@ for epoch in range(num_epochs):
         D_losses.append(errD.item())
 
         # Check how the generator is doing by saving G's output on fixed_noise
-        if (iters % 500 == 0) or ((epoch == num_epochs-1) and (i == len(dataloader)-1)):
+        if i == len(dataloader)-1:
             with torch.no_grad():
-                fake = netG(fixed_noise).detach().cpu()
-            img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
-
+                situations = torch.split(torch.split(data[0],input_variables,3)[0],1,0)[0]
+                noise = torch.randn(b_size, nr, 1, 1, device=device)
+                situations = torch.reshape(situations,(1,10*input_variables,1,1))
+                noise = torch.cat((fixed_noise,situations),1)
+                fake = netG(noise).detach().cpu()
+            if epoch == 0 :
+                fake_all = torch.cat((torch.split(torch.split(data[0],input_variables,3)[0],1,0)[0],fake),3)
+            else :
+                fake = torch.cat((torch.split(torch.split(data[0],input_variables,3)[0],1,0)[0],fake),3)
+                fake_all = torch.cat((fake_all,fake),0)
         iters += 1
 
+fake2 = np.array(fake_all)
 plt.figure(figsize=(10,5))
 plt.title("Generator and Discriminator Loss During Training")
 plt.plot(G_losses,label="G")
@@ -290,6 +296,7 @@ plt.show()
 for i, data in enumerate(dataloader, 0):
     data[0] = data[0].float()
     situations = torch.split(data[0],input_variables,3)[0]
+    print(np.shape(situations))
     real_cpu = data[0].to(device)
     b_size = real_cpu.size(0)
 
@@ -297,12 +304,13 @@ for i, data in enumerate(dataloader, 0):
     # Generate batch of latent vectors
     noise = torch.randn(b_size, nr, 1, 1, device=device)
     situations = torch.reshape(situations,(b_size,10*input_variables,1,1))
+    print(np.shape(situations))
     noise = torch.cat((noise,situations),1)
     fake = netG(noise)
     fake = torch.cat((torch.split(data[0],input_variables,3)[0],fake),3)
     break
 
-fake2 = np.array(fake.detach())
+#fake2 = np.array(fake.detach())
 
 #%% Affichage des résultats
 

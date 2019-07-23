@@ -71,23 +71,10 @@ Create the appropriate dataset class format for our problem
 #%% Dataset creation
 #should we have the header removed?
 def get_data(dataroot):
-    #df = np.array([])
-    df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])
-    # print(np.shape(df[0]))
-    #print(type(df))
-    #print(type(df.values))
-    #print(df.values)
-    #print('')
+    df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])#,'direction','avancement'])
     df = df.values
-    #df = df.astype(double)
-    df = torch.DoubleTensor([df])#,dtype=torch.double)
-    df.float()
-    #print(df)
-    #print(type(df))
-    #print(df)
-    #print('')
-    #time.sleep(10) 
-    return df #.values
+    df = torch.DoubleTensor([df])
+    return df
 
 data_sets = dset.DatasetFolder(dataroot, 
                                    loader=get_data, extensions=['.csv'])
@@ -210,6 +197,8 @@ for epoch in range(num_epochs):
         #data = data
         #for j in range(128):
         data[0] = data[0].float()
+        #Extract the data representing the situations from data 
+        situations = torch.chunk(data[0],1,3)[0]
         #print('i : ' + str(i) + ' ; data : ' + str(data))
         #print(type(data[0]))
         #print(type(data[0][0]))
@@ -236,12 +225,22 @@ for epoch in range(num_epochs):
 
         ## Train with all-fake batch
         # Generate batch of latent vectors
-        noise = torch.randn(b_size, nz, 1, 1, device=device)
+        noise = torch.randn(b_size, nz-1, 10, 3, device=device)
+        #for j in range(batch_size) :
+            #print(noise[j])
+            #print(data[0][j][:3])
+            #print(np.shape(noise[j]))
+        print(np.shape(noise))
+        print(np.shape(data[0]))
+        noise = torch.cat((noise,situations),1)
+        
+        print(np.shape(noise))
         # Generate fake image batch with G
         fake = netG(noise)
         label.fill_(fake_label)
         # Classify all fake batch with D
         output = netD(fake.detach()).view(-1)
+        print(np.shape(output))
         # Calculate D's loss on the all-fake batch
         errD_fake = criterion(output, label)
         # Calculate the gradients for this batch
@@ -284,3 +283,12 @@ for epoch in range(num_epochs):
             img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
 
         iters += 1
+
+plt.figure(figsize=(10,5))
+plt.title("Generator and Discriminator Loss During Training")
+plt.plot(G_losses,label="G")
+plt.plot(D_losses,label="D")
+plt.xlabel("iterations")
+plt.ylabel("Loss")
+plt.legend()
+plt.show()
