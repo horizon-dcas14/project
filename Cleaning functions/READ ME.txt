@@ -1,0 +1,11 @@
+=====================================================================
+DataCleaning_STD
+
+It will take all the simulation entries from the folder (..\Data\recorded_csv_data2), clean and format them  
+Then, normalize them to further break them down in several files splitted into two categories: robot and autonomous.
+Every file contains 10 secs of simulation. 
+=====================================================================
+
+Clean_Split
+
+same as DataCleaning_STD, without normalizing the data.
