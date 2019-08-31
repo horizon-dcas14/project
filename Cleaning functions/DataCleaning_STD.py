@@ -4,6 +4,7 @@
 Created on Fri Jun  7 16:36:56 2019
 
 @author: aloisblarre
+@author: felipetxs
 """
 
 import os

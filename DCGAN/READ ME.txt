@@ -1,0 +1,15 @@
+Both DCGAN and CDCGAN run in similar ways. 
+
+They must be saved in folder inside the folder dataset, ie. (..\dataset\DCGAN\)
+
+To run both files, you must have created the folder ALL DATA (..\dataset\Data)
+
+DCGAN: convolutional GAN
+	The cost function is the cross entropy loss plus one ressemblence term ponderated by the term alpha (line 253).
+	Inside the code you must choose which dataset you to run ( autonomous or human) and specify the path (line 44). 
+	To validate the results, you can use "Result analysis" ( ..\dataset\Validation\Result analysis\)
+
+CDCGAN: conditional DCGAN
+	The cost function is the cross entropy loss plus one ressemblence term ponderated by the term alpha (line 275).
+	Inside the code you run both datasets ( autonomous or human) simultaneously by specifying the path (../Data/All data/) (line 44). 
+	To validate the results, you can use "Result analysis CDCGAN" ( ..\dataset\Validation\Result analysis CDCGAN\)

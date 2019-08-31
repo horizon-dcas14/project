@@ -10,6 +10,7 @@ from __future__ import print_function
 #%matplotlib inline
 import argparse
 import os
+import csv
 import random
 import torch
 import torch.nn as nn
@@ -23,10 +24,13 @@ import torchvision.transforms as transforms
 import torchvision.utils as vutils
 import numpy as np
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from IPython.display import HTML
 import time
+import math
+import tkinter
 
 #%% Initializing parameters
 # Set random seem for reproducibility
@@ -37,51 +41,55 @@ random.seed(manualSeed)
 torch.manual_seed(manualSeed)
 
 # Root directory for dataset
-dataroot = "../Data/Autonomous data/"
+dataroot = "../Data/All data/autonomou_cleaned_normalized"
 # Number of workers for dataloader
-workers = 2
+workers = 0
 # Batch size during training
-batch_size = 128
-# Spatial size of training images. All images will be resized to this
-#   size using a transformer.
-image_size = 64
+batch_size = 64 # 128
 # Number of channels in the training data.
 nc = 1
-# Size of z latent vector (i.e. size of generator input)
-nz = 100
 # Size of feature maps in generator
-ngf = 64
+ngf = 128
 # Size of feature maps in discriminator
-ndf = 6
+ndf = 128
 # Number of training epochs
-num_epochs = 5
+num_epochs = 50
 # Learning rate for optimizers
-lr = 0.0002
+lr = 0.001 # 0.0002
 # Beta1 hyperparam for Adam optimizers
 beta1 = 0.5
 # Number of GPUs available. Use 0 for CPU mode.
 ngpu = 1
-
-
+# Size of z latent vector (i.e. size of generator input)
+nz = 100
 
 """
 Create the appropriate dataset class format for our problem
 
 """
 #%% Dataset creation
-#should we have the header removed?
 def get_data(dataroot):
-    df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])#,'direction','avancement'])
+    df = pd.read_csv(dataroot, usecols = ['robot_x','robot_y', 'robot_theta'])
     df = df.values
     df = torch.DoubleTensor([df])
     return df
 
 data_sets = dset.DatasetFolder(dataroot, 
                                    loader=get_data, extensions=['.csv'])
-dataloader = torch.utils.data.DataLoader(data_sets, batch_size, shuffle = True, num_workers = workers)
+dataloader = torch.utils.data.DataLoader(data_sets, batch_size, shuffle = False, num_workers = workers)
+
 # Decide which device we want to run on
 device = torch.device("cuda:0" if (torch.cuda.is_available() and ngpu > 0) else "cpu")
 
+##plot real example
+real_batch = np.array(list(next(iter(dataloader)))[0])
+real_batch = real_batch.astype(float)
+fig=plt.figure()
+plt.plot(real_batch[0][0].transpose((1,0))[0],real_batch[0][0].transpose((1,0))[1], 'r*-')
+j=0
+for xs,ys in zip(real_batch[0][0].transpose((1,0))[0], real_batch[0][0].transpose((1,0))[1]):
+    j += 1
+    plt.text(xs, ys, '%d' % (j)) 
 #%% weights initialization
 # further used in the generator and discriminator
 def weights_init(m):
@@ -104,21 +112,22 @@ class Generator(nn.Module):
         self.ngpu = ngpu
         self.main = nn.Sequential(
             # input is Z, going into a convolution
-            nn.ConvTranspose2d( nz, ngf * 4, (6,1), 1, 0, bias=False),
-            nn.BatchNorm2d(ngf * 4),
-            nn.ReLU(True),
-            # state size. (ngf*4) x 6 x 1
-            nn.ConvTranspose2d(ngf * 4, ngf * 2, (3,1), 1, 0, bias=False),
+            nn.ConvTranspose2d( nz, ngf * 2, (4,1), 1, 0, bias=False),
             nn.BatchNorm2d(ngf * 2),
             nn.ReLU(True),
-            # state size. (ngf*2) x 8 x 1
-            nn.ConvTranspose2d( ngf * 2, 1, 3, 1, 0, bias=False),
+            # state size. (ngf*4) x 6 x 2
+            nn.ConvTranspose2d(ngf * 2, ngf, (5,1), 1, 0, bias=False),
+            nn.BatchNorm2d(ngf),
+            nn.ReLU(True),
+            # state size. (ngf*2) x 8 x 3
+            nn.ConvTranspose2d( ngf, nc, (3,3), 1, 0, bias=False),
             nn.Tanh()
             # state size. (1) x 10 x 3
         )
     def forward(self, input):
             return self.main(input)
-        
+
+                
 # Create the generator
 netG = Generator(ngpu).to(device)
 netG = netG.float()
@@ -130,21 +139,21 @@ if (device.type == 'cuda') and (ngpu > 1):
 netG.apply(weights_init)
 
 #%% Create the discriminator
-# Discriminator architecture
 class Discriminator(nn.Module):
     def __init__(self, ngpu):
         super(Discriminator, self).__init__()
         self.ngpu = ngpu
         self.main = nn.Sequential(
-            # input is (nc=1) x 10 x 3
-            nn.Conv2d(nc, ndf, 3, 1, 0, bias=False),
+            # input is (nc=3) x 10 x 3
+            nn.Conv2d(nc, ndf, (3,3), 1, 0, bias=False),
+            #nn.BatchNorm2d(ndf),
             nn.LeakyReLU(0.2, inplace=True),
             # state size. (ndf) x 8 x 1
-            nn.Conv2d(ndf, ndf * 2, (3,1), 1, 0, bias=False),
+            nn.Conv2d(ndf, ndf * 2, (5,1), 1, 0, bias=False),
             nn.BatchNorm2d(ndf * 2),
             nn.LeakyReLU(0.2, inplace=True),
-            # state size. (ndf*2) x 6 x 1
-            nn.Conv2d(ndf * 2, 1, (6,1), 1, 0, bias=False),
+            # state size. (ndf*2) x 4 x 1
+            nn.Conv2d(ndf * 2, 1, (4,1), 1, 0, bias=False),
             nn.Sigmoid()
         )
     def forward(self, input):
@@ -167,21 +176,21 @@ criterion = nn.BCELoss()
 
 # Create batch of latent vectors that we will use to visualize
 #  the progression of the generator
-fixed_noise = torch.randn(64, nz, 1, 1, device=device)
+fixed_noise = torch.randn(1, nz, 1, 1, device=device)
 
 # Establish convention for real and fake labels during training
 real_label = 1
 fake_label = 0
 
 # Setup Adam optimizers for both G and D
-optimizerD = optim.Adam(netD.parameters(), lr=lr, betas=(beta1, 0.999))
+optimizerD = optim.Adam(netD.parameters(), lr=10*lr, betas=(beta1, 0.999))
 optimizerG = optim.Adam(netG.parameters(), lr=lr, betas=(beta1, 0.999))
 
 #%% Training the DCGAN
 # Training Loop
 
 # Lists to keep track of progress
-img_list = []
+csv_list = []
 G_losses = []
 D_losses = []
 iters = 0
@@ -194,18 +203,8 @@ for epoch in range(num_epochs):
     # For each batch in the dataloader
     print('Epoch : ', epoch)
     for i, data in enumerate(dataloader, 0):
-        #data = data
-        #for j in range(128):
         data[0] = data[0].float()
-        #Extract the data representing the situations from data 
-        situations = torch.chunk(data[0],1,3)[0]
-        #print('i : ' + str(i) + ' ; data : ' + str(data))
-        #print(type(data[0]))
-        #print(type(data[0][0]))
-        #print(np.shape(data))
-        #print(np.shape(data[0]))
-        #print(np.shape(data[0][0]))
-        #break
+        
         ############################
         # (1) Update D network: maximize log(D(x)) + log(1 - D(G(z)))
         ###########################
@@ -225,22 +224,13 @@ for epoch in range(num_epochs):
 
         ## Train with all-fake batch
         # Generate batch of latent vectors
-        noise = torch.randn(b_size, nz-1, 10, 3, device=device)
-        #for j in range(batch_size) :
-            #print(noise[j])
-            #print(data[0][j][:3])
-            #print(np.shape(noise[j]))
-        print(np.shape(noise))
-        print(np.shape(data[0]))
-        noise = torch.cat((noise,situations),1)
-        
-        print(np.shape(noise))
+        noise = torch.randn(b_size, nz, 1, 1, device=device)
+
         # Generate fake image batch with G
         fake = netG(noise)
         label.fill_(fake_label)
         # Classify all fake batch with D
         output = netD(fake.detach()).view(-1)
-        print(np.shape(output))
         # Calculate D's loss on the all-fake batch
         errD_fake = criterion(output, label)
         # Calculate the gradients for this batch
@@ -259,7 +249,13 @@ for epoch in range(num_epochs):
         # Since we just updated D, perform another forward pass of all-fake batch through D
         output = netD(fake).view(-1)
         # Calculate G's loss based on this output
-        errG = criterion(output, label)
+        ## Mean squared error
+        alpha = torch.tensor([[1.,1.,1.]])
+        MSE_fake = torch.sum(torch.sum((fake-data[0])**2,dim=0)/fake.shape[0],dim=1)/10
+        MSE = torch.sum(alpha*MSE_fake, dim=1)
+        ## Mean squared erro + entropy loss
+        errG = criterion(output, label) + MSE
+        #errG = criterion(output, label)
         # Calculate gradients for G
         errG.backward()
         D_G_z2 = output.mean().item()
@@ -271,19 +267,24 @@ for epoch in range(num_epochs):
             print('[%d/%d][%d/%d]\tLoss_D: %.4f\tLoss_G: %.4f\tD(x): %.4f\tD(G(z)): %.4f / %.4f'
                   % (epoch, num_epochs, i, len(dataloader),
                      errD.item(), errG.item(), D_x, D_G_z1, D_G_z2))
+            #print(fake)
+            
 
         # Save Losses for plotting later
         G_losses.append(errG.item())
         D_losses.append(errD.item())
-
+        
         # Check how the generator is doing by saving G's output on fixed_noise
         if (iters % 500 == 0) or ((epoch == num_epochs-1) and (i == len(dataloader)-1)):
             with torch.no_grad():
                 fake = netG(fixed_noise).detach().cpu()
-            img_list.append(vutils.make_grid(fake, padding=2, normalize=True))
-
+            csv_list.append(fake)
+        
         iters += 1
 
+#%% ANALYSIS
+        
+### Loss versus training iteration
 plt.figure(figsize=(10,5))
 plt.title("Generator and Discriminator Loss During Training")
 plt.plot(G_losses,label="G")
@@ -291,4 +292,21 @@ plt.plot(D_losses,label="D")
 plt.xlabel("iterations")
 plt.ylabel("Loss")
 plt.legend()
+if dataroot == "../All data/Human data/":
+    plt.savefig('../Validation/losses_human.png')
+elif  dataroot == "../All data/Autonomous data/":
+    plt.savefig('../Validation/losses_autonomous.png')
+else :
+    plt.savefig('../Validation/losses_all_data.png')
 plt.show()
+
+### Visualization of progress along training
+for i in range(len(csv_list)):
+    with open('../Validation/Last Epoch/DCGAN' + str(i) + '.csv', 'w', newline = '') as alldata :
+        writer = csv.writer(alldata,delimiter=',')
+        j=0;
+        array = csv_list[i].numpy()
+        for j in range(10):
+            writer.writerow([array[0][0][j][0],array[0][0][j][1],array[0][0][j][2]])
+            j+=1
+

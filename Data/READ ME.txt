@@ -1,0 +1,2 @@
+"..\Data\recorded_csv_data2" :  folder containing all data as collected from the Firefighter simulation. 
+				This folder is needed by the cleaning functions to produce the appropriate files for the DCGAN
